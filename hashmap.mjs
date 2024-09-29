@@ -14,42 +14,53 @@ export default class HashMap{
         return hashCode;
     };
     set(key,value){
+        if (this.bucket.length/this.capacity >= this.loadFactor) {
+            this.capacity += 8;
+        }
+
         let newKey = this.hash(key);
         for(let i = 0; i < this.bucket.length; i++){
-            if (this.bucket[i].newKey === newKey) {
-                this.bucket[i].value = value;
+            if (this.bucket[i].key === newKey) {
+                return this.bucket[i].value.push(value);
             }    
         };
-        this.bucket.push({newKey,value});
+         for(let i = 0; i < this.bucket.length; i++){
+            if (this.bucket[i].key === newKey) {
+                return this.bucket[i].value = value;
+            }    
+        };
+        this.bucket.push({key: newKey,value: [value]});
     };
     get(key){
-        let newKey = this.hash(key);
         for (let i = 0; i < this.bucket.length; i++) {
-            return (this.bucket[i].newKey === newKey) ? item.value : null;
-        };
+            if (this.bucket[i].key === key) {
+                return this.bucket[i].value;
+            } 
+        }
+        return null;
     };
     has(key){
-        let newKey = this.hash(key);
         for (let i = 0; i < this.bucket.length; i++) {
-            return (this.bucket[i].newKey === newKey) ? true : false;
+            if (this.bucket[i].key === key) {
+               return true;
+            };
         };
+        return false;
     };
     remove(key){
-        let newKey = this.hash(key);
         for (let i = 0; i < this.bucket.length; i++) {
-            if (this.bucket[i].newKey === newKey) {
+            if (this.bucket[i].key === key) {
                 this.bucket.splice(i,1);
                 return true;
             };
-            return false;
         };
+        return false;
     };
     length(){
         return this.bucket.length;
     };
     clear(){
-        this.bucket = [];
-        return;
+        return this.bucket = [];
     }
     keys(){
         let keysArray = [];
@@ -73,7 +84,7 @@ export default class HashMap{
         let keyValuesArray = [];
 
         for (let i = 0; i < this.bucket.length; i++) {
-            keyValuesArray.push([this.bucket[i].newKey , this.bucket[i].value]);
+            keyValuesArray.push([this.bucket[i].key, this.bucket[i].value]);
         };
         
         return keyValuesArray;
